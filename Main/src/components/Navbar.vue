@@ -21,6 +21,11 @@
           <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>
         </router-link>
       </li>
+      <li>
+        <router-link :to="{ name: 'landingPage' }" :class="{ 'nav-link': true }">
+          <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+        </router-link>
+      </li>
     </ul>
   </nav>
 </template>
