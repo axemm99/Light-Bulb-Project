@@ -1,18 +1,18 @@
 <template>
-  <div class="home">
+  <div class="">
     <Navbar/>
-    
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-2">
+
+    <b-container fluid>
+      <b-row>
+        <b-col sm="2">
           <Sidebar/>
-        </div>
-        <div class="col-md-8">
+        </b-col>
+        <b-col sm="8">
           <Catalog/>
-        </div>
-        <div class="col-md-2"></div>
-      </div>
-    </div>
+        </b-col>
+        <b-col sm="2"></b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -21,21 +21,16 @@
 // @ is an alias to /src
 import Navbar from "@/components/Navbar.vue";
 import Sidebar from "@/components/Sidebar.vue";
-import Foot from "@/components/Foot.vue";
 import Catalog from "@/components/Catalog.vue";
 
 export default {
   components: {
     Navbar,
     Sidebar,
-    Foot,
     Catalog
   }
 };
 </script>
 
 <style>
-.container-fluid {
-  background-color: black;
-}
 </style>

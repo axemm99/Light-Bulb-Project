@@ -1,23 +1,24 @@
 import Vue from "vue";
 import Router from "vue-router";
-//import LandingPage from "./views/LandingPage.vue";
+import LandingPage from "./views/LandingPage.vue";
 import Login from "./views/Login.vue";
 import Home from "./views/Home.vue";
-import Profile from "./views/Profile.vue";
 import NewQuestions from "./views/NewQuestion.vue";
-import Questions from "./views/Question.vue";
+import Question from "./views/Question.vue";
+import Profile from "./views/Profile.vue";
+import Courses from "./views/Courses.vue";
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
-    /*{
+    {
       path: "/",
       name: "landingPage",
       component: LandingPage
-    },*/
+    },
     {
-      path: "/",
+      path: "/login",
       name: "login",
       component: Login
     },
@@ -27,7 +28,7 @@ export default new Router({
       component: Home
     },
     {
-      path: "/profile#?userId?rand",
+      path: "/profile",
       name: "profile",
       component: Profile
     },
@@ -37,9 +38,14 @@ export default new Router({
       component: NewQuestions
     },
     {
-      path: "/question",
+      path: "/question/:id",
       name: "question",
-      component: Questions
+      component: Question
+    },
+    {
+      path: "/courses",
+      name: "courses",
+      component: Courses
     }
   ]
 });

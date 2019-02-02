@@ -7,9 +7,10 @@
         <b-col sm="2">
           <Sidebar/>
         </b-col>
-        <b-col sm="10">
-          <Profile/>
+        <b-col sm="8">
+          <Courses/>
         </b-col>
+        <b-col sm="2"></b-col>
       </b-row>
     </b-container>
   </div>
@@ -20,16 +21,13 @@
 // @ is an alias to /src
 import Navbar from "@/components/Navbar.vue";
 import Sidebar from "@/components/Sidebar.vue";
-import Profile from "@/components/Profile.vue";
+import Courses from "@/components/Courses.vue";
 
 export default {
   components: {
     Navbar,
     Sidebar,
-    Profile
+    Courses
   }
 };
 </script>
-
-<style>
-</style>

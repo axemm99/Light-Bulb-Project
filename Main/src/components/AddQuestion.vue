@@ -1,248 +1,215 @@
 <template>
-    <form id="addQuestion">
-        <div class="form-group">
-            <label for="inputTitleQuestion">Titulo da Pergunta</label>
-            <input type="text" class="form-control" id="inputTitleQuestion" placeholder="" required>
-        </div>
+  <b-container fluid>
+    <div class="middle newQuestion">
+      <b-row class="subrow">
+        <h2>Nova Pergunta</h2>
+      </b-row>
 
-        <div class="form-group">
-            <label for="inputDescription">Descrição</label>
-            <input type="text" class="form-control" id="inputDescription" placeholder="" required>
-        </div>
+      <b-row class="subrow frmQuestion">
+        <b-form id="frmQuestion">
+          <b-form-group label="Título" label-for="inputTitle">
+            <b-form-input id="inputTitle" v-model="form.title" type="text" required></b-form-input>
+          </b-form-group>
+          <b-form-group label="Descrição" label-for="inputDescription">
+            <b-form-textarea
+              id="inputDescription"
+              v-model="form.description"
+              :rows="5"
+              :max-rows="100"
+              required
+            ></b-form-textarea>
+          </b-form-group>
 
-        <!--<div class="form-group">
-            <label for="inputPhoto">Foto (Opcional)</label>
-            <input type="url" class="form-control" id="inputPhoto" placeholder="">
-        </div>-->
-        
-        <div class="form-group">
-            <label for="inputPhoto">Foto (Opcional)</label>
-            <input type="file" multiple accept="image/*,.pdf,.png,.jpg" class="form-control" id="inputPhoto">
-        </div>
+          <div class="form-group">
+            <label for="inputPhoto">Imagens (Opcional)</label>
+            <input type="url" class="form-control" id="inputPhoto">
+          </div>
 
-        <div class="form-group">
+          <!--<div class="form-group">
+            <label for="inputPhoto">Imagens (Opcional)</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*, .pdf, .png, .jpg"
+              class="form-control"
+              id="inputPhoto"
+            >
+          </div>
+
+          <div class="form-group">
             <label for="inputFiles">Ficheiros (Opcional)</label>
             <input type="file" multiple class="form-control" id="inputFiles">
-        </div>
+          </div>
 
-        <div class="form-group">
+          TAGS ?????
+          <div class="form-group">
             <label for="inputTags">Tags</label>
-
-            <select id="inputTags" multiple="multiple" size="10" name="duallistbox_demo1">
-              <!--  <option value="poo">POO</option>
-                <option value="aed">AED</option>
-                <option value="tsiw">TSIW</option>
-                <option value="multimedia">Multimédia</option>
-                <option value="ams">AMS</option>
-                <option value="bibloteca">Biblioteca</option>
-                <option value="design">Design</option>
-                <option value="pwi">PWI</option>
-                <option value="esmad">ESMAD</option>
-                <option value="matematica1">Matemática I</option>
-                <option value="css">CSS</option>-->
+            <select id="inputTags" multiple="multiple" size="10">
+              <option :value="tags.id">{{ tags.tag }}</option>
             </select>
+          </div>
 
-           <!-- <input type="text" data-role="tagsinput" class="form-control" id="inputTags" placeholder="Separa as palavras com uma virgula">-->
-        </div>
-        
-        <button type="button" @click="addQuestion()" id="btnAdd" class="btn btn-primary">Adicionar</button>
-        <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
-    </form>
+          COURSE ?????
+          <div class="form-group">
+            <label for="inputCourses">Curso</label>
+            <select id="inputCourses" multiple="multiple" size="10">
+              <option :value="courses.id">{{ courses.course }}</option>
+            </select>
+          </div>
+          
+          UNITS ?????
+          <div class="form-group">
+            <label for="inputUnits">Disciplinas</label>
+            <select id="inputUnits" multiple="multiple" size="10">
+              <option :value="courses.courseUnit.id">{{ courses.courseUnit.unit }}</option>
+            </select>
+          </div>-->
+          <b-button @click="addQuestion()" class="btn" type="button">Publicar</b-button>
+        </b-form>
+      </b-row>
+    </div>
+  </b-container>
 </template>
 
 
-
-<style>
-</style>
-
 <script>
-//import new form ".../store.js";
-
-//import store from './store.js'
-
 export default {
-  //el: "#addQuestion",
   name: "addQuestion",
   data: function() {
     return {
-        id: 0,
+      loggedUser: 0,
+      form: {
         title: "",
         description: "",
         idTags: [],
         idCourse: 0,
         files: "",
-        images: "",
-        userId: 0,
-        date: "0",
-        view: 0,
-        upvote: 0,
-        downvote: 0,
-        status: "",
-        answers: []
-      }
+        images: ""
+      },
+      tempQuestions: [],
+      todaysDate: "",
 
-    },
-   /* computed: {
-            questions() {
-                return this.$store.getters.questions;
-            }
-        },*/
-  
- /* data: function() {
-    return {
-      idQuestion: 0,
-      //upvotes: 0,
-      //downvotes: 0,
-      //
-      //idUser: 0,
-      //username: "",
-      title: "",
-      description: "",
-      questions: []
+      /********/
+      tempLoggedId: 0
     };
-  },*/
- /* beforeCreated(){
-    let inputTags = document.getElementById("inputTags")
-    let tags = this.$store.getters.tags
-    this.$store.getters.loadTags(inputTags, tags)
-  },*/
+  },
   created() {
-    let questions = this.$store.getters.questions
-    if (localStorage.getItem("questions")) {
-      this.questions = JSON.parse(localStorage.getItem("questions"));
-     // console.log(this.questions)
-      //console.log(questions)
-    }
-    else {
-        /*for (let i = 0; i < questions.length; i++) {
-            localStorage.setItem("questions", JSON.stringify(questions[i]));     
-        }*/
-        localStorage.setItem("questions", JSON.stringify(this.questions));
-    }
-    let inputTags = document.getElementById("inputTags")
-    let tags = this.$store.getters.tags
-    this.$store.getters.loadTags(inputTags, tags)
-  },
-  beforeUpdate(){
-    let questions = this.$store.getters.questions
-    localStorage.setItem("questions", JSON.stringify(this.questions));
-  },
-  updated(){
-    let questions = this.$store.getters.questions
-    localStorage.setItem("questions", JSON.stringify(this.questions));
-  },
-  destroyed() {
-    let questions = this.$store.getters.questions
-    localStorage.setItem("questions", JSON.stringify(this.questions));
-    /*for (let i = 0; i < questions.length; i++) {
-        localStorage.setItem("questions", JSON.stringify(questions[i]));     
-    }*/
-   // localStorage.setItem("questions", JSON.stringify(this.questions));
+    this.loggedUser = this.$store.state.loggedUser;
+    this.todaysDate = this.$store.getters.getTodaysDate;
+
+    /********/
+    this.tempLoggedId = parseInt(
+      JSON.parse(localStorage.getItem("loggedUser"))
+    );
   },
   methods: {
-    validation(title, description){
-        let newQuestion = {
-            title: title,
-            description: description
-        }
+    checkQuestion(fields) {
+      let error = "";
 
-        let valid = false
-        if (this.$store.getters.validQuestion(newQuestion) == "") {
-            valid = true;
-        }
-        else{
-            valid = false
-        }
-
-        return {
-            valid: valid,
-            msg: this.$store.getters.validQuestion(newQuestion)
-        };
-    },
-    getLastId() {
-      return this.questions.length
-        ? this.questions[this.questions.length - 1].id
-        : 0;
+      if (fields.title == "" || fields.description == "") {
+        error = "Os dados estão incompletos";
+      }
+      return error;
     },
 
-    getTodaysDate() {
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
+    questionValidation() {
+      let fields = {
+        title: this.form.title,
+        description: this.form.description
+      };
+      let valid = false;
 
-        if (dd < 10) {
-        dd = '0' + dd;
-        }
+      if (this.checkQuestion(fields) == "") {
+        valid = true;
+      } else {
+        valid = false;
+      }
 
-        if (mm < 10) {
-        mm = '0' + mm;
-        }
-
-        today = dd + '/' + mm + '/' + yyyy;
-
-        return today
+      return {
+        valid: valid,
+        msg: this.checkQuestion(fields)
+      };
     },
 
     addQuestion() {
-        let inputTitleQuestion = document.getElementById("inputTitleQuestion");
-        let inputDescription = document.getElementById("inputDescription");
-        let inputPhoto = document.getElementById("inputPhoto");
-        let inputFiles = document.getElementById("inputFiles");
-        let inputTags = document.getElementById("inputTags");
-        let questions = this.$store.getters.questions
-        let currentState = this.$store.getters.state
-        let tags = this.$store.getters.tags
-        let loggedUser = JSON.parse(localStorage.getItem("loggedUser"))
-        //let currentTagId = 0
-        console.log(parseInt(loggedUser))
-        for(let i=0; i<tags.length; i++){            
-            console.log(tags[i].id)
-        }
-        //let currentUser = currentState.loggedUser
-        //let tags = (inputTags.value).split(",");
-       // console.log(tags)
+      let newQuestion = {
+        id: this.$store.getters.getQuestionLastId,
+        title: this.form.title,
+        description: this.form.description,
+        idTags: [],
+        idCourse: 0,
+        files: "",
+        images: "",
+        userId: this.tempLoggedId,
+        date: this.$store.getters.getTodaysDate,
+        view: 0,
+        upvote: 0,
+        downvote: 0,
+        status: "unlocked",
+        answers: []
+      };
 
-       console.log(inputTags.value)
+      if (this.questionValidation().valid) {
+        this.addXP();
+        this.checkChallenges();
+        this.$store.dispatch("set_question", newQuestion);
+        alert("Registo efetuado com sucesso");
+      } else {
+        alert(this.questionValidation().msg);
+      }
+    },
 
-        if (this.validation(inputTitleQuestion.value, inputDescription.value).valid){
-            for(let i=0; i<tags.length; i++){
-                if(parseInt(loggedUser)){
+    addXP() {
+      let xp = {
+        amount: 5,
+        user: this.tempLoggedId
+      };
+      this.$store.dispatch("edit_user_xp", xp);
+    },
 
-                }
-            }
+    checkChallenges() {
+      let temp = this.$store.getters.getQuestionsByUserId(this.tempLoggedId);
 
-            this.questions.push({
-                id: Number(this.getLastId()) + 1,
-                title: inputTitleQuestion.value,
-                description: inputDescription.value,        
-                idTags: inputTags.value,
-                idCourse: 0,
-                files: inputFiles.value,
-                images: inputPhoto.value,
-                userId: parseInt(loggedUser),
-                date: this.getTodaysDate(),
-                view: 0,
-                upvote: 0,
-                downvote: 0,
-                status: "unlocked",
-                answers: []
-            });
+        console.log(temp.length);
+      if (temp.length == 0) {
+        let newMedal = {
+          medal: 2,
+          userId: this.tempLoggedId
+        };
 
-            console.log(this.questions)
-            
-
-            localStorage.setItem("questions", JSON.stringify(this.questions));
-
-
-        }
-        else {
-            alert(
-                this.validation(inputTitleQuestion.value, inputDescription.value).msg
-            );
-        }
-        
+        console.log(newMedal);
+        this.$store.dispatch("add_user_medals", newMedal);
+      }
+    }
+  },
+  computed: {
+    questions() {
+      return this.$store.getters.questions;
+    },
+    tags() {
+      return this.$store.getters.tags;
     }
   }
 };
 </script>
+
+
+<style>
+.newQuestion h2 {
+  color: white;
+}
+
+.frmQuestion {
+  margin: 50px 0px 0px 0px;
+}
+
+#frmQuestion {
+  padding: 5px;
+  width: 100%;
+  text-align: left;
+}
+
+#frmQuestion .btn {
+  float: right;
+}
+</style>

@@ -1,31 +1,36 @@
 <template>
-    <div id="newQuestion">
-        <Navbar/>
+  <div class="">
+    <Navbar/>
 
-        <div class="container-fluid pl-0">
-            <Sidebar/>
-            <AddQuestion/>
-        </div>
-
-        <!-- FOOTER -->
-        <Foot/>
-    </div>
+    <b-container fluid>
+      <b-row>
+        <b-col sm="2">
+          <Sidebar/>
+        </b-col>
+        <b-col sm="8">
+          <AddQuestion/>
+        </b-col>
+        <b-col sm="2"></b-col>
+      </b-row>
+    </b-container>
+  </div>
 </template>
 
 
 <script>
 // @ is an alias to /src
 import Navbar from "@/components/Navbar.vue";
-import Foot from "@/components/Foot.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import AddQuestion from "@/components/AddQuestion.vue";
 
 export default {
   components: {
     Navbar,
-    Foot,
     Sidebar,
     AddQuestion
   }
 };
 </script>
+
+<style>
+</style>

@@ -1,59 +1,41 @@
 <template>
-  <div class="container mx-auto">
-    <div id="forms" class="col-md-6 mx-auto">
-      <img src="@/assets/icon.png" alt="logo.png" height="180">
-      <form id="frmLogin" action>
-        <div class="form-group form">
-          <label for="inputUsername">Username</label>
-          <input class="form-control" type="text" id="inputUsername">
-        </div>
-        <div class="form-group form">
-          <label for="inputPassword">Password</label>
-          <input class="form-control" type="password" id="inputPassword">
-        </div>
-        <!--<input class="btn btn-secundary form" type="submit" value="Login">-->
-        <b-button type="button" @click="userLogin()" class="btn">Login</b-button>
-      </form>
-      <div class="col-md-6 mr-auto">
-        <p>Precisa de ajuda?</p>
-      </div>
-    </div>
-  </div>
+  <b-container fluid>
+    <b-row class="justify-content-md-center">
+      <b-col id="forms" sm="3">
+        <img src="@/assets/icon.png" alt="logo.png" height="200">
+        <b-form id="frmLogin">
+          <b-form-group label="Username" label-for="inputUsername">
+            <b-form-input id="inputUsername" v-model="form.username" type="text" required></b-form-input>
+          </b-form-group>
+          <b-form-group label="Password" label-for="inputPassword">
+            <b-form-input id="inputPassword" v-model="form.password" type="password" required></b-form-input>
+          </b-form-group>
+          <b-button type="button" @click="userLogin()" class="btn">Login</b-button>
+        </b-form>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 
 <script>
 export default {
-  name: "Login",
+  name: "login",
   data: function() {
     return {
-      id: 0,
-      username: "",
-      status: false
+      form: {
+        username: "",
+        password: ""
+      }
     };
   },
-
   methods: {
-    userLogin() {
-      let inputUsername = document.getElementById("inputUsername");
-      let inputPassword = document.getElementById("inputPassword");
-
-      if (
-        this.loginValidation(inputUsername.value, inputPassword.value).valid
-      ) {
-        this.$router.push({ name: "home" });
-      } else {
-        alert(
-          this.loginValidation(inputUsername.value, inputPassword.value).msg
-        );
-      }
-    },
-
-    loginValidation(username, password) {
+    loginValidation() {
       let login = {
-        username: username,
-        password: password
+        username: this.form.username,
+        password: this.form.password
       };
+      let userId = this.$store.getters.getUserId(login);
       let valid = false;
 
       if (this.$store.getters.checkUser(login) == "") {
@@ -64,8 +46,22 @@ export default {
 
       return {
         valid: valid,
-        msg: this.$store.getters.checkUser(login)
+        msg: this.$store.getters.checkUser(login),
+        loggedUser: userId
       };
+    },
+
+    userLogin() {
+      if (
+        this.loginValidation().valid
+      ) {
+        this.$store.dispatch("set_logged_user", this.loginValidation().loggedUser);
+        this.$router.push({ name: "home" });
+      } else {
+        alert(
+          this.loginValidation().msg
+        );
+      }
     }
   }
 };
@@ -94,38 +90,6 @@ p {
 }
 
 #forms {
-  padding: 40px 60px;
-  border: 5px solid #000;
-  background-color: #000;
-  border-radius: 25px;
-}
-
-.container {
-  margin: 200px 0px;
-  height: 600px;
-}
-
-.form {
-  width: 100%;
-  text-align: left;
-}
-
-.form-control {
-  display: block;
-  background-color: white;
-  border: none;
-}
-
-.btn {
-  color: white;
-  text-align: center;
-  border: none;
-  background-color: #ffd150;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.btn :active {
-  background-color: #fdd25ab9;
+  padding: 100px 0px;
 }
 </style>

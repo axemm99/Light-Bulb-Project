@@ -1,105 +1,141 @@
 <template>
-  <div class="container catalog">
-    <div class="row">
-      <h2>Explorar Perguntas</h2>
-    </div>
+  <b-container fluid>
+    <div class="middle catalog">
+      <b-row class="subrow">
+        <h2>Explorar Perguntas</h2>
+      </b-row>
 
-    <div class="row">
-      <!-- FILTER -->
-      <div id="filter" class="col-md-6 d-flex filter">
-        <div class="col-md-6 d-flex filter">
-          <b-button @click="orderMostAnswers" class="btn">Destaques</b-button>
-          <b-button @click="orderMostRecent" class="btn">Recentes</b-button>
-        </div>
-        <div class="col-md-2 d-flex filter">
-          <b-button class="btn">
+      <!--BUTTONS -->
+      <b-row class="subrow row1">
+        <!-- FILTER -->
+        <b-col id="filter" md="6" class="d-flex filter">
+          <b-button
+            :pressed.sync="topClicked"
+            @click="orderTopQuestions"
+            id="topQuestions"
+            class="btn text"
+          >Destaques</b-button>
+          <b-button
+            :pressed.sync="recentClicked"
+            @click="orderRecentQuestions"
+            id="recentQuestions"
+            class="btn text"
+          >Recentes</b-button>
+          <b-button
+            :pressed.sync="lockedClicked"
+            @click="showOnlyLocked"
+            id="lockedQuestions"
+            class="btn"
+          >
             <i class="fa fa-lock" aria-hidden="true"></i>
           </b-button>
-          <b-button class="btn">
+          <b-button
+            :pressed.sync="unlockedClicked"
+            @click="showOnlyUnlocked"
+            id="unlockedQuestions"
+            class="btn"
+          >
             <i class="fa fa-unlock" aria-hidden="true"></i>
           </b-button>
-        </div>
-      </div>
+        </b-col>
 
-      <!-- NEW QUESTION -->
-      <div id="newQuestion" class="col-md-6 d-flex flex-row-reverse">
-        <router-link :to="{ name: 'newQuestion' }">
-          <b-button class="btn">Nova Questão</b-button>
-        </router-link>
-      </div>
-    </div>
+        <!-- NEW QUESTION -->
+        <b-col id="newQuestion" md="6" class="d-flex flex-row-reverse align-self-end">
+          <router-link :to="{ name: 'newQuestion' }">
+            <b-button class="btn text">Nova Pergunta</b-button>
+          </router-link>
+        </b-col>
+      </b-row>
 
-    <!-- QUESTIONS -->
-    <div v-for="question in questions" :key="question.id" class="row mb-3">
-      <div class="col-md-12">
-        <div class="row">
-          <div
-            v-for="course in courses"
-            :key="course.id"
-            class="col-md-12"
-            style="background-color:lightgrey; border-radius:10px"
-          >
-            <div class="col-md-12 d-flex" v-if="question.idCourse === course.id">
-              <p>{{ course.course }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-md-1">
-            <i v-if="question.status === 'locked'" class="fa fa-lock" aria-hidden="true"></i>
-            <i v-else class="fa fa-unlock" aria-hidden="true"></i>
-          </div>
-          <div class="col-md-8 text-left">
-            <router-link :to="{ name: 'Questions' }">
-              <h5>{{ question.title }}</h5>
+      <!-- QUESTIONS -->
+      <b-row class="subrow">
+        <b-col md="12" v-for="question in sortedQuestions" :key="question.id" class="question">
+          <b-row>
+            <b-col md="1" class="questionDetails">
+              <i class="fa fa-heart"></i>
+            </b-col>
+            <b-col>
+            <router-link :to="{ name: 'question', params: { id: question.id } }">
+              <b-row>
+                <b-col md="8" class="text-left questionDetails">
+                  <h5>{{ question.title }}</h5>
+                </b-col>
+                <b-col md="3" class="text-left questionDetails">
+                  <i class="fa fa-long-arrow-alt-up"></i>
+                  <p>&nbsp;{{ question.upvote }}</p>
+                  <i class="fa fa-long-arrow-alt-down"></i>
+                  <p>&nbsp;{{ question.downvote }}</p>
+                  <i class="fa fa-eye"></i>
+                  <p>&nbsp;{{ question.view }}</p>
+                </b-col>
+                <b-col md="1" class="text-left questionDetails">
+                  <i v-if="question.status === 'locked'" class="fa fa-lock" aria-hidden="true"></i>
+                  <i v-else class="fa fa-unlock" aria-hidden="true"></i>
+                </b-col>
+              </b-row>
             </router-link>
-          </div>
-
-          <div class="col-md-3">
-            <i class="fa fa-arrow-up" style="color:green" aria-hidden="true"></i>
-            {{ question.upvote }}
-            <i
-              class="fa fa-arrow-down ml-3"
-              style="color:red"
-              aria-hidden="true"
-            ></i>
-            {{ question.downvote}}
-            <i class="fa fa-eye ml-3" aria-hidden="true"></i>
-            {{ question.view}}
-          </div>
-        </div>
-
-        <!-- STILL TESTING -->
-        <div class="row">
-          <div class="col-md-11 offset-1 text-left">
-            <div class="row">
-              <div v-for="tag in tags" :key="tag.id">
-                <div v-for="questionIdTag in question.idTags" :key="questionIdTag">
-                  <h5
-                    v-if="questionIdTag === tag.id"
-                    class="badge badge-secondary mr-2"
-                  >{{ tag.tag }}</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12 mt-3" style="background-color:grey"></div>
+            </b-col>
+          </b-row>
+          <!--<b-row>
+            <b-col
+              md="12"
+              v-for="course in courses"
+              :key="course.id"
+              class="text-left questionCourse"
+            >
+              <router-link :to="{ name: '', params: { } }">
+                <p v-if="question.idCourse === course.id">{{ course.course }}</p>
+              </router-link>
+            </b-col>
+          </b-row>
+          <b-row class="orange">
+            <b-col md="12" v-for="tag in tags" :key="tag.id" class="text-left yellow">
+              <router-link :to="{ name: '', params: { } }">
+                <p v-if="question.idTags === tag.id">{{ tag.tag }}</p>
+              </router-link>
+            </b-col>
+          </b-row>-->
+        </b-col>
+      </b-row>
     </div>
-  </div>
+  </b-container>
 </template>
 
 
 <script>
 export default {
-  name: "Catalog",
+  name: "catalog",
   data: function() {
-    return {};
+    return {
+      tempCourses: [],
+      tempQuestions: [],
+      sortedQuestions: [],
+      tempLocked: [],
+      tempUnlocked: [],
+      topClicked: false,
+      recentClicked: false,
+      lockedClicked: false,
+      unlockedClicked: false
+    };
+  },
+  created() {
+    //this.tempsortedQuestionsCourses = this.$store.getters.checkCourseLabel;
+    this.tempQuestions = this.$store.getters.questions;
+    this.sortedQuestions = this.tempQuestions;
+    this.tempLocked = this.$store.getters.getLockedQuestions;
+    this.tempUnlocked = this.$store.getters.getUnlockedQuestions;
   },
   methods: {
-    showQuestions() {
-      this.$store.state.questions;
+    orderQuestionById(a, b) {
+      if (a.questions.id < b.questions.id) return 1;
+      if (a.questions.id > b.questions.id) return -1;
+      else return 0;
+    },
+
+    orderQuestionsUp(a, b) {
+      if (a.answers.length < b.answers.length) return 1;
+      if (a.answers.length > b.answers.length) return -1;
+      else return 0;
     },
 
     orderUpDate(a, b) {
@@ -113,23 +149,40 @@ export default {
       if (Date.parse(a.date) > Date.parse(b.date)) return -1;
       else return 0;
     },
-    orderDownAnswers(a, b) {
-      if (a.answers.length < b.answers.length) return 1;
-      if (a.answers.length > b.answers.length) return -1;
-      else return 0;
+
+    orderTopQuestions() {
+      if (this.topClicked) {
+        this.sortedQuestions = [...this.sortedQuestions].sort(this.orderQuestionsUp);
+      } else {
+        this.sortedQuestions = this.tempQuestions;
+      }
     },
 
-    orderMostRecent() {
-      this.$store.state.questions.sort(this.orderDownDate);
+    orderRecentQuestions() {
+      if (this.recentClicked) {
+        this.sortedQuestions = [...this.sortedQuestions].sort(this.orderDownDate);
+      } else {
+        this.sortedQuestions = this.tempQuestions;
+      }
     },
-    orderMostAnswers() {
-      this.$store.state.questions.sort(this.orderDownAnswers);
+
+    showOnlyLocked() {
+      if (this.lockedClicked) {
+        this.sortedQuestions = this.tempLocked;
+      } else {
+        this.sortedQuestions = this.tempQuestions;
+      }
+    },
+
+    showOnlyUnlocked() {
+      if (this.unlockedClicked) {
+        this.sortedQuestions = this.tempUnlocked;
+      } else {
+        this.sortedQuestions = this.tempQuestions;
+      }
     }
   },
   computed: {
-    questions() {
-      return this.$store.getters.questions;
-    },
     tags() {
       return this.$store.getters.tags;
     },
@@ -142,9 +195,47 @@ export default {
 
 
 <style>
+.catalog h2,
+.catalog h5,
+.catalog p,
+.catalog .fa {
+  color: white;
+}
+
+.catalog p {
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.row1 {
+  margin-bottom: 25px;
+}
+
+.catalog .fa-long-arrow-alt-up {
+  color: rgb(29, 175, 102) !important;
+}
+
+.catalog .fa-long-arrow-alt-down {
+  color: rgb(187, 5, 5) !important;
+}
+
+.catalog .fa-heart {
+  background-color: transparent;
+}
+
+.catalog .fa-heart:hover {
+  background-color: transparent;
+  color: rgb(255, 174, 0) !important;
+}
+
 #filter,
 #newQuestion {
   margin: 0px;
+}
+
+.filter {
+  padding: 5px 0px;
+  margin-right: 15px;
 }
 
 #filter .btn {
@@ -152,9 +243,8 @@ export default {
   margin: 50px 15px 0px 0px;
 }
 
-#newQuestion .btn {
-  padding: 5px 0px;
-  margin: 0px 15px 0px 0px;
+#filter .text {
+  padding: 5px;
 }
 
 #filter i {
@@ -162,21 +252,26 @@ export default {
   color: white;
 }
 
-#newQuestion a {
-  margin: 0px;
+#newQuestion b-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
 }
 
-.catalog {
-  margin: 20px 0px;
-  background-color: white;
+.questionCourse {
+  font-size: 12px;
+  padding-left: 50px !important;
 }
 
-.catalog h2 {
-  margin-top: 20px;
+.question {
+  margin: 5px 0px !important;
+  border-bottom: 0.5px solid grey;
 }
 
-.filter {
-  padding: 5px 0px;
-  margin-right: 15px;
+.questionDetails {
+  padding: 0px;
 }
 </style>
