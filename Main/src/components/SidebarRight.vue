@@ -51,21 +51,24 @@ export default {
       let xp = 0
       let arrayXp = []
       let places = []
-      for (let i = 0; i < this.$store.state.users.length; i++) {
-        tempUsers = this.$store.state.users[i].gameElements;
+      let users = this.$store.state.users
+      console.log("oii")
+      for (let i = 0; i < users.length; i++) {
+        tempUsers = users[i].gameElements;
+        console.log(tempUsers)
         for (let j = 0; j < tempUsers.length; j++) {
-            console.log(tempUsers[j])
-          if(tempUsers[j].xp > xp){
-            xp = tempUsers[i].xp
-            arrayXp.push(tempUsers[i].xp)
-            places.push(this.$store.state.users[i].id)
-            console.log("places: " + places)
-            console.log("xp: " + xp)
-          }      
+            //console.log(tempUsers)
+            if(tempUsers[j].xp > xp){
+                xp = tempUsers[j].xp
+                arrayXp.push(tempUsers[j].xp)
+                places.push(this.$store.state.users[i].id)
+                console.log("places: " + places)
+                console.log("xp: " + xp)
+            }      
         }
       }
 
-      return places, xp
+      return places, arrayXp
     },
   },
   mounted() {
