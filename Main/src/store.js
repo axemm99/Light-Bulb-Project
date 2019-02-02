@@ -556,6 +556,28 @@ export default new Vuex.Store({
       return today;
     },
 
+    getRankingUsers() {
+      let tempUsers = []
+      let xp = 0
+      let xp2 = 0
+      let xp3 = 0
+      let firstPlace
+      let secondPlace
+      let thirdPlace
+      for (let i = 0; i < state.users.length; i++) {
+        tempUsers = state.users[i].gameElements;
+        for (let j = 0; j < tempUsers.length; j++) {
+          if(tempUsers[j].xp > xp){
+            xp = tempUsers[j].xp
+            firstPlace = state.users[i].id
+          }        
+        }
+      }
+
+      
+
+    },
+
     users(state) {
       return state.users;
     },
