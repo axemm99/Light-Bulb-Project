@@ -558,23 +558,19 @@ export default new Vuex.Store({
 
     getRankingUsers() {
       let tempUsers = []
-      let xp = 0
-      let xp2 = 0
-      let xp3 = 0
-      let firstPlace
-      let secondPlace
-      let thirdPlace
+      let xp = []
+      let places = []
       for (let i = 0; i < state.users.length; i++) {
         tempUsers = state.users[i].gameElements;
         for (let j = 0; j < tempUsers.length; j++) {
           if(tempUsers[j].xp > xp){
-            xp = tempUsers[j].xp
-            firstPlace = state.users[i].id
-          }        
+            xp.push(tempUsers[i].xp)
+            places.push(state.users[i].id)
+          }      
         }
       }
 
-      
+      return places, xp
 
     },
 
