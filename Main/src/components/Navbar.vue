@@ -23,12 +23,38 @@
       </li>
       <li>
         <router-link :to="{ name: 'landingPage' }" :class="{ 'nav-link': true }">
-          <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+          <i class="fas fa-sign-out-alt" aria-hidden="true" @click="logOut()"></i>
         </router-link>
       </li>
     </ul>
   </nav>
 </template>
+
+<script>
+  export default {
+    name: "navbar",
+    data: function() {
+      return {
+        tempLoggedId: 0
+      };
+    },
+    created(){
+      this.loggedUser = this.$store.state.loggedUser;
+
+      /********/
+      this.tempLoggedId = parseInt(
+        JSON.parse(localStorage.getItem("loggedUser"))
+      );
+    },
+
+    methods: {
+      logOut(){
+        this.$store.dispatch("set_logged_user", 0);
+        localStorage.setItem("loggedUser", 0);
+      }
+    }
+  }
+</script>
 
 
 <style>
