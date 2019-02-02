@@ -47,22 +47,26 @@ export default {
     },
 
     arrayTempUsers() {
-      this.tempIds = this.$store.getters.getUserUnitsById(this.tempLoggedId);
-      let arrayTempUsers = []
-
-      for (let i = 0; i < this.tempIds.length; i++) {
-        let tempUnit = {
-          id: this.tempIds[i].unitId,
-          name: this.$store.getters.getUnitByCourseId(this.tempIds[i].courseId, this.tempIds[i].unitId),
-          courseId: this.tempIds[i].courseId
+      let tempUsers = []
+      let xp = 0
+      let arrayXp = []
+      let places = []
+      for (let i = 0; i < this.$store.state.users.length; i++) {
+        tempUsers = this.$store.state.users[i].gameElements;
+        for (let j = 0; j < tempUsers.length; j++) {
+            console.log(tempUsers[j])
+          if(tempUsers[j].xp > xp){
+            xp = tempUsers[i].xp
+            arrayXp.push(tempUsers[i].xp)
+            places.push(this.$store.state.users[i].id)
+            console.log("places: " + places)
+            console.log("xp: " + xp)
+          }      
         }
-        arrayTempUsers.push(tempUnit);
       }
 
-      return arrayTempUsers
+      return places, xp
     },
-
-    
   },
   mounted() {
   }
