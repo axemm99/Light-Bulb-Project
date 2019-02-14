@@ -563,10 +563,10 @@ export default new Vuex.Store({
       for (let i = 0; i < state.users.length; i++) {
         tempUsers = state.users[i].gameElements;
         for (let j = 0; j < tempUsers.length; j++) {
-          if(tempUsers[j].xp > xp){
+          if (tempUsers[j].xp > xp) {
             xp.push(tempUsers[i].xp)
             places.push(state.users[i].id)
-          }      
+          }
         }
       }
 
