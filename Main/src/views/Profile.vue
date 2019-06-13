@@ -5,9 +5,9 @@
     <b-container fluid>
       <b-row>
         <b-col sm="2">
-          <Sidebar/>
+          <Leftbar/>
         </b-col>
-        <b-col sm="10">
+        <b-col sm="10" class="container-border">
           <Profile/>
         </b-col>
       </b-row>
@@ -19,13 +19,13 @@
 <script>
 // @ is an alias to /src
 import Navbar from "@/components/Navbar.vue";
-import Sidebar from "@/components/Sidebar.vue";
+import Leftbar from "@/components/Leftbar.vue";
 import Profile from "@/components/Profile.vue";
 
 export default {
   components: {
     Navbar,
-    Sidebar,
+    Leftbar,
     Profile
   }
 };

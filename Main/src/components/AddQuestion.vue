@@ -8,7 +8,7 @@
       <b-row class="subrow frmQuestion">
         <b-form id="frmQuestion">
           <b-form-group label="Título" label-for="inputTitle">
-            <b-form-input id="inputTitle" v-model="form.title" type="text" required></b-form-input>
+            <b-form-input id="inputTitle" v-model="form.title" type="text" placeholder="Pergunta" required></b-form-input>
           </b-form-group>
           <b-form-group label="Descrição" label-for="inputDescription">
             <b-form-textarea
@@ -16,13 +16,14 @@
               v-model="form.description"
               :rows="5"
               :max-rows="100"
+              placeholder="Descrição"
               required
             ></b-form-textarea>
           </b-form-group>
 
-          <div class="form-group">
+          <div id="img" class="form-group">
             <label for="inputPhoto">Imagens (Opcional)</label>
-            <input type="url" class="form-control" id="inputPhoto">
+            <input type="url" class="form-control" id="inputPhoto" placeholder="Imagem">
           </div>
 
           <!--<div class="form-group">
@@ -56,7 +57,7 @@
               <option :value="courses.id">{{ courses.course }}</option>
             </select>
           </div>
-          
+
           UNITS ?????
           <div class="form-group">
             <label for="inputUnits">Disciplinas</label>
@@ -73,6 +74,7 @@
 
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "addQuestion",
   data: function() {
@@ -101,6 +103,14 @@ export default {
     this.tempLoggedId = parseInt(
       JSON.parse(localStorage.getItem("loggedUser"))
     );
+  },  
+  mounted(){    
+    this.$store.dispatch("loadUsers");
+    this.$store.dispatch("loadCourses");
+    this.$store.dispatch("loadQuestions");
+    this.$store.dispatch("loadAnswers");
+    this.$store.dispatch("loadUnits");
+    this.$store.dispatch("loadTags");
   },
   methods: {
     checkQuestion(fields) {
@@ -132,7 +142,27 @@ export default {
     },
 
     addQuestion() {
+
       let newQuestion = {
+        tags: [],
+        images: [],
+        date: this.$store.getters.getTodaysDate,
+        view: 0,
+        upvotes: [],
+        downvotes: [],
+        locked: false,
+        followers: [],
+        _id: this.$store.getters.getQuestionLastId,
+        title: this.form.title,
+        description: this.form.description,
+        user: this.tempLoggedId,
+        course: 0,
+        unit: 0,
+        answers: [],
+        __v: 0
+      }
+
+      let newQuestion2 = {
         id: this.$store.getters.getQuestionLastId,
         title: this.form.title,
         description: this.form.description,
@@ -143,15 +173,15 @@ export default {
         userId: this.tempLoggedId,
         date: this.$store.getters.getTodaysDate,
         view: 0,
-        upvote: 0,
-        downvote: 0,
+        upvote: [],
+        downvote: [],
         status: "unlocked",
         answers: []
       };
 
       if (this.questionValidation().valid) {
         this.addXP();
-        this.checkChallenges();
+        this.checkMedals();
         this.$store.dispatch("set_question", newQuestion);
         alert("Registo efetuado com sucesso");
       } else {
@@ -167,7 +197,7 @@ export default {
       this.$store.dispatch("edit_user_xp", xp);
     },
 
-    checkChallenges() {
+    checkMedals() {
       let temp = this.$store.getters.getQuestionsByUserId(this.tempLoggedId);
 
         console.log(temp.length);
@@ -188,7 +218,8 @@ export default {
     },
     tags() {
       return this.$store.getters.tags;
-    }
+    },
+    ...mapState(["users", "courses", "questions", "answers", "courseUnits", "tags"])
   }
 };
 </script>
@@ -196,7 +227,7 @@ export default {
 
 <style>
 .newQuestion h2 {
-  color: white;
+  color: black;
 }
 
 .frmQuestion {
@@ -209,7 +240,17 @@ export default {
   text-align: left;
 }
 
+#frmQuestion .text {
+  
+  color: black;
+}
+
 #frmQuestion .btn {
   float: right;
+  color: white;
+}
+
+#img {
+  color: black;
 }
 </style>

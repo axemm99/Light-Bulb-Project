@@ -1,8 +1,28 @@
 <template>
   <div id="app">
-      <router-view/>
+    <router-view/>
   </div>
 </template>
+
+<script>
+import { mapState } from "vuex";
+export default {
+  name: "app",
+  mounted() {
+    this.$store.dispatch("loadUsers");
+    this.$store.dispatch("loadCourses");
+    this.$store.dispatch("loadQuestions");
+    this.$store.dispatch("loadUnits");
+    this.$store.dispatch("loadTags");
+    this.$store.dispatch("loadMedals");
+    this.$store.dispatch("loadLevels");
+  },
+  computed: {
+    ...mapState(["users", "courses", "questions", "courseUnits", "tags", "medals", "levels"])
+  }
+};
+</script>
+
 
 <style>
 #app {
@@ -13,8 +33,17 @@
   color: #2c3e50;
 }
 
-/*---------------------------------------------------------------------------------------*/
-/* CLASSES */
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  color: white;
+  font-weight: 400;
+}
+
+h2 {
+  margin-top: 30px;
+}
 
 a {
   text-decoration: none;
@@ -27,39 +56,22 @@ a:hover {
 }
 
 .container-fluid {
-  background-color: black;
+  background-color: white;
   margin: 0px;
   min-height: 100vh;
+}
+
+.container-border {
+  margin: 0px;
+  padding: 0px 25px;
 }
 
 .subrow {
   margin: 0px;
 }
 
-.middle {
-    position: absolute;
-    margin: auto;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0px;
-}
-
-.middle h2 {
-  margin-top: 20px;
-  /*color: white;*/
-}
-
-.btn {
-  color: white;
-  text-align: center;
-  border: none;
-  background-color: #ffd150;
-  margin-top: 20px;
-}
-
-.btn :active {
-  background-color: #fdd25ab9;
+.forms {
+  padding: 100px 0px;
 }
 
 .form {
@@ -73,6 +85,19 @@ a:hover {
   border: none;
 }
 
+.btn {
+  color: black;
+  text-align: center;
+  border: none;
+  background-color: #ffd150;
+  margin: 20px 10px 0px 10px;
+}
+
+.btn:hover {
+  color: black;
+  background-color: black;
+}
+
 .grey {
   background-color: rgb(192, 192, 192);
   height: 5px;
@@ -80,22 +105,8 @@ a:hover {
 
 .yellow {
   background-color: #ffd150;
-}
-
-
-.red {
-  background-color: red;
-}
-.blue {
-  background-color: blue;
-}
-.green {
-  background-color: green;
-}
-.pink {
-  background-color: rgb(247, 136, 154);
-}
-.orange {
-  background-color: orange;
+  height: 2px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style>

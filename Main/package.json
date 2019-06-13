@@ -1,27 +1,33 @@
 {
-  "name": "Light-Bulb",
+  "name": "light_bulb",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "cloud": "NODE_ENV=development vue-cli-service serve --open --inline --host $IP --port $PORT --public $C9_HOSTNAME --config vue.config.js"
   },
   "dependencies": {
-    "bootstrap-vue": "^2.0.0-rc.11",
-    "vue": "^2.5.21",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.13",
+    "mdbvue": "^5.1.1",
+    "sweetalert2": "^8.2.6",
+    "vue": "^2.6.10",
+    "vue-cli": "^2.9.6",
     "vue-router": "^3.0.1",
+    "vue-sweetalert2": "^1.6.4",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.3.0",
-    "@vue/cli-plugin-eslint": "^3.3.0",
-    "@vue/cli-service": "^3.3.0",
+    "@vue/cli-plugin-babel": "^3.4.1",
+    "@vue/cli-plugin-eslint": "^3.4.1",
+    "@vue/cli-service": "^3.4.1",
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.12.0",
-    "eslint-plugin-vue": "^5.1.0",
-    "vue-template-compiler": "^2.5.21"
+    "eslint": "^5.15.0",
+    "eslint-plugin-vue": "^5.2.2",
+    "vue-template-compiler": "^2.6.8"
   },
   "eslintConfig": {
     "root": true,
@@ -46,5 +52,17 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "description": "<p align=\"center\">   <br>   <img width=\"400\" src=\"src/assets/logo_lb.png\" alt=\"logo\">   <br>   <br> </p>",
+  "main": "babel.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solecity/Light-Bulb.git"
+  },
+  "author": "mariana moreira / ines moreira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/solecity/Light-Bulb/issues"
+  },
+  "homepage": "https://github.com/solecity/Light-Bulb#readme"
 }

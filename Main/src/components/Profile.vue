@@ -14,14 +14,13 @@
           </b-row>
         </b-col>
         <b-col md="6" id="profileInfo" class="profileText">
-          <h4>{{ activeUser.fullName }}</h4>
-          <p>{{ userLevel.label }}</p>
-          <p>Level {{ tempGameElements.level }}</p>
+          <h4>{{ activeUser.name }}</h4>
+          <p>Level {{ activeUser.gameElements.level }} - {{ userLevel.label }}</p>
 
           <!-- XP -->
-          <p class="w-25 barXP">XP: {{ tempGameElements.xp }}</p>
-          <b-progress :value="tempGameElements.xp" :max="userLevel.maxXP" class="w-50"></b-progress>
-          <p class="w-25 barXP">{{ tempGameElements.levelXP }} / {{ userLevel.maxXP }}</p>
+          <p class="w-25 barXP">XP: {{ activeUser.gameElements.xp }}</p>
+          <b-progress :value="activeUser.gameElements.xp" :max="userLevel.maxXP" class="w-50"></b-progress>
+          <p class="w-25 barXP">{{ activeUser.gameElements.levelXP }} / {{ userLevel.maxXP }}</p>
         </b-col>
 
         <!-- STATS -->
@@ -29,13 +28,13 @@
           <b-row>
             <b-col md="6">
               <p>
-                {{ stats.questions }}
+                {{ getQuestionsByUserId(activeUser.id).length }}
                 <br>Perguntas
               </p>
             </b-col>
             <b-col md="6">
               <p>
-                {{ stats.answers }}
+                {{ countAnswersByUserId() }}
                 <br>Respostas
               </p>
             </b-col>
@@ -43,13 +42,13 @@
           <b-row>
             <b-col md="6">
               <p>
-                {{ stats.upvote }}
+                {{ countUpvotes() }}
                 <br>Upvotes
               </p>
             </b-col>
             <b-col md="6">
               <p>
-                {{ tempGameElements.medals.length }}
+                {{ activeUser.gameElements.medals.length }}
                 <br>Medalhas
               </p>
             </b-col>
@@ -111,27 +110,18 @@
 
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "profile",
   data: function() {
     return {
       loggedUser: 0,
       activeUser: {},
-      stats: {
-        questions: [],
-        answers: 0,
-        upvote: 0
-      },
-      userLevel: {
-        label: "",
-        maxXP: 0
-      },
+      userLevel: {},
       userMedals: [],
       tempQuestions: [],
-      tempLevel: {},
-      tempGameElements: {},
-      tempChallenges: [],
-      tempUserLevel: {},
+      userLevel: {},
 
       /********/
       tempLoggedId: 0
@@ -145,31 +135,14 @@ export default {
       JSON.parse(localStorage.getItem("loggedUser"))
     );
 
-    this.activeUser = this.$store.getters.getUserInfoById(this.tempLoggedId);
-    this.tempGameElements = this.activeUser.gameElements;
-    this.tempChallenges = this.tempGameElements.medals;
-    this.tempLevel = this.$store.getters.getLevelById(
-      this.tempGameElements.level
-    );
-    this.tempQuestions = this.$store.getters.getQuestionsByUserId(
-      this.tempLoggedId
-    );
+    this.activeUser = this.getUserById(this.tempLoggedId);
+    this.userLevel = this.getLevelById(this.activeUser.gameElements.level);
+    this.tempQuestions = this.getQuestionsByUserId(this.tempLoggedId);
+    this.showUserMedals();
   },
   methods: {
-    showActiveUser() {
-      if (this.tempQuestions != []) {
-        this.stats.questions = this.tempQuestions.length;
-      }
-      this.stats.answers = this.$store.getters.getAnswersByUserId(
-        this.tempLoggedId
-      );
-      this.userLevel.label = this.tempLevel.label;
-      this.userLevel.maxXP = this.tempLevel.maxXP;
-    },
-
     countUpvotes() {
       let count = 0;
-
       if (this.tempQuestions.length != 0) {
         for (let i = 0; i < this.tempQuestions.length; i++) {
           count += this.tempQuestions[i].upvote;
@@ -178,44 +151,52 @@ export default {
       return count;
     },
 
+    countAnswersByUserId() {
+      let count = 0;
+      for (let i = 0; i < this.tempQuestions.length; i++) {
+        for (let j = 0; j < this.tempQuestions[i].answers.length; j++) {
+          if (this.tempQuestions[i].answers[j].userId == this.tempLoggedId) {
+            count++;
+          }          
+        }
+      }
+      return count;
+    },
+
     showUserMedals() {
-      for (let i = 0; i < this.tempChallenges.length; i++) {
-        let tempMedal = {
-          id: this.tempChallenges[i],
-          label: this.$store.getters.getMedalById(this.tempChallenges[i]).label,
-          type: this.$store.getters.getMedalById(this.tempChallenges[i]).type
+      let medals = this.activeUser.gameElements.medals;
+      for (let i = 0; i < medals.length; i++) {
+        let temp = {
+          id: medals[i],
+          label: this.getMedalById(medals[i]).label,
+          type: this.getMedalById(medals[i]).type
         };
-        this.userMedals.push(tempMedal);
+        this.userMedals.push(temp);
       }
     },
 
     showUserQuestions() {
-      for (let i = 0; i < this.tempChallenges.length; i++) {
-        let tempMedal = {
-          id: this.tempChallenges[i],
-          label: this.$store.getters.getMedalById(this.tempChallenges[i]).label,
-          type: this.$store.getters.getMedalById(this.tempChallenges[i]).type
+      for (let i = 0; i < this.tempMedals.length; i++) {
+        let temp = {
+          id: this.tempMedals[i],
+          label: this.getMedalById(this.tempMedals[i]).label,
+          type: this.getMedalById(this.tempMedals[i]).type
         };
-        this.userMedals.push(tempMedal);
+        this.userMedals.push(temp);
       }
     }
   },
   computed: {
-    users() {
-      return this.$store.getters.users;
-    },
-
-    questions() {
-      return this.$store.getters.questions;
-    },
-
-    levels() {
-      return this.$store.getters.levels;
-    }
-  },
-  mounted() {
-    this.showActiveUser();
-    this.showUserMedals();
+    ...mapGetters([
+      "getUsers",
+      "getQuestions",
+      "getLevels",
+      "getUserById",
+      "getQuestionsByUserId",
+      "getAnswersByUserId",
+      "getMedalById",
+      "getLevelById"
+    ])
   }
 };
 </script>
@@ -235,11 +216,11 @@ export default {
 h4,
 h3 {
   font-weight: bold;
-  color: white;
+  color: black;
 }
 
 .profile p {
-  color: white;
+  color: black;
   font-size: 14px;
   margin-bottom: 10px;
 }
@@ -301,5 +282,6 @@ p {
 }
 
 .historyQuestions {
-  display: inline-block;}
+  display: inline-block;
+}
 </style>

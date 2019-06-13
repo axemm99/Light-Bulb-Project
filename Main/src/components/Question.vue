@@ -1,237 +1,293 @@
 <template>
   <b-container fluid>
-    <div class="middle questionPage">
+    <div v-if="question" class="middle questionPage">
       <!-- QUESTION TITLE -->
       <b-row class="subrow questionInfo">
         <h2>{{ question.title }}</h2>
+        <div id="lock" v-if="question.user == tempLoggedId">
+          <div v-if="question.locked == false">
+            <b-button class="btn">
+              <i
+                @click="edit_question_status(question._id)"
+                class="fa fa-unlock"
+                aria-hidden="true"
+              ></i>
+            </b-button>
+          </div>
+          <div v-if="question.locked == true">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+          </div>
+        </div>
       </b-row>
 
       <!-- DIVISION BAR -->
-      <b-row id="divisionBarQuestion" class="grey"></b-row>
+      <b-row id="divisionBarQuestion" class="yellow"></b-row>
 
       <!-- QUESTION INFO -->
-      <b-row class="subrow questionInfo">
-        <!-- QUESTION VOTES -->
-        <b-col md="1" id="votesInfo">
-          <b-row class="voteBtn">
-            <b-button class="upBtn" @click="addUpvote()">
-              <i class="fa fa-angle-up fa-lg"></i>
-            </b-button>
-            <p>{{question.upvote}}</p>
-          </b-row>
-          <b-row class="voteBtn">
-            <b-button class="downBtn" @click="addDownvote()">
-              <i class="fa fa-angle-down fa-lg"></i>
-            </b-button>
-            <p>{{question.downvote}}</p>
-          </b-row>
-          <b-row class="followBtn">
-            <b-button class="likeBtn">
-              <i class="fa fa-heart fa-lg"></i>
-            </b-button>
-          </b-row>
-        </b-col>
-
-        <!-- QUESTION CONTENT -->
-        <b-col md="8" id="questionContent">
-          <p>{{ question.description }}</p>
-        </b-col>
-
-        <!-- QUESTION USER DATA -->
-        <b-col class="questionUserData">
-          <b-row id="questionUserTime">
-            <b-col md="12">
-              <!--<p>XXXX horas</p>-->
+      <b-row class="subrow rowsInfo">
+        <b-col md="12">
+          <!-- QUESTION VOTES -->
+          <b-row>
+            <b-col md="1" class="votes">
+              <b-row class="voteBtn">
+                <b-button class="upBtn" @click="upvote(question._id)">
+                  <i
+                    class="fa fa-angle-up fa-lg"
+                    :style="checkVote(question.upvotes) ? 'color: rgb(29, 175, 102) !important;' : 'color: rgb(177, 177, 177) !important;'"
+                  ></i>
+                </b-button>
+                <p>{{ question.upvotes.length }}</p>
+              </b-row>
+              <b-row class="voteBtn">
+                <b-button class="downBtn" @click="downvote(question._id)">
+                  <i
+                    class="fa fa-angle-down fa-lg"
+                    :style="checkVote(question.downvotes) ? 'color: rgb(187, 5, 5) !important;' : 'color: rgb(177, 177, 177) !important;'"
+                  ></i>
+                </b-button>
+                <p>{{ question.downvotes.length }}</p>
+              </b-row>
+              <b-row class="followBtn">
+                <b-button class="likeBtn">
+                  <i class="fa fa-heart fa-lg"></i>
+                </b-button>
+              </b-row>
             </b-col>
-          </b-row>
-          <b-row id="questionUserInfo">
-            <b-col md="3">
-              <img :src="questionUser.profilePic" alt="pic.png">
-            </b-col>
-            <b-col md="9">
-              <p>{{ questionUser.fullName }}</p>
-              <p>Lvl {{ tempLevel.id }} - {{ tempLevel.label }}</p>
+
+            <b-col md="11">
+              <!-- QUESTION CONTENT -->
+              <b-row class="content">
+                <p>{{ question.description }}</p>
+              </b-row>
+              <b-row class="d-flex flex-row-reverse">
+                <!-- USER DATA -->
+                <b-col md="4" class="userData">
+                  <!--<b-row>
+                  <b-col md="12">
+                    <p>XXXX horas</p>
+                  </b-col>
+                  </b-row>-->
+                  <b-row>
+                    <b-col md="4" class="mt-3">
+                      <img :src="questionUser.profilePic" alt="pic.png">
+                    </b-col>
+                    <b-col md="8" class="mt-2">
+                      <p>{{ questionUser.name }}</p>
+                      <p>Lvl - {{ getLevelById(this.questionUser.gameElements.level).level }}</p>
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
             </b-col>
           </b-row>
         </b-col>
       </b-row>
 
       <!-- ANSWERS AMOUNT -->
-      <b-row id="answersTab" class="subrow questionInfo">
-        <h5>{{answers.length}} Respostas</h5>
+      <b-row id="answersTab" class="subrow rowsInfo">
+        <h5>{{question.answers.length}} Respostas</h5>
       </b-row>
 
       <!-- DIVISION BAR -->
-      <b-row id="divisionBarQuestion" class="grey"></b-row>
+      <b-row
+        id="divisionBarQuestion"
+        class="yellow"
+        :style="question.answers.length == 0 ? 'margin: 200px;' : ''"
+      ></b-row>
 
       <!-- ANSWERS LIST -->
-      <b-row v-for="answer in answers" :key="answer.id" class="subrow questionInfo">
-        <!-- ANSWER VOTES -->
-        <b-col md="1" id="votesInfo">
-          <b-row class="voteBtn">
-            <b-button class="upBtn">
-              <i class="fa fa-angle-up fa-lg"></i>
-            </b-button>
-            <p>{{answer.upvote}}</p>
-          </b-row>
-          <b-row class="voteBtn">
-            <b-button class="downBtn">
-              <i class="fa fa-angle-down fa-lg"></i>
-            </b-button>
-            <p>{{answer.downvote}}</p>
+      <b-row v-for="answer in question.answers" :key="answer._id" class="subrow rowsInfo">
+        <b-col md="12">
+          <!-- ANSWER VOTES -->
+          <b-row>
+            <b-col md="1" class="votes">
+              <b-row class="voteBtn">
+                <b-button class="upBtn">
+                  <i class="fa fa-angle-up fa-lg"></i>
+                </b-button>
+                <p>{{answer.upvotes.length}}</p>
+              </b-row>
+              <b-row class="voteBtn">
+                <b-button class="downBtn">
+                  <i class="fa fa-angle-down fa-lg"></i>
+                </b-button>
+                <p>{{answer.downvotes.length}}</p>
+              </b-row>
+            </b-col>
+
+            <b-col md="11">
+              <!-- ANSWER CONTENT -->
+              <b-row class="content">
+                <p>{{ answer.description }}</p>
+              </b-row>
+              <b-row class="d-flex flex-row-reverse">
+                <!-- USER DATA -->
+                <b-col md="4" class="userData">
+                  <!--<b-row>
+                  <b-col md="12">
+                    <p>XXXX horas</p>
+                  </b-col>
+                  </b-row>-->
+                   <b-row>
+                    <b-col md="4" class="mt-3">
+                      <img :src="getUserById(answer.user).profilePic" alt="pic.png">
+                    </b-col>
+                    <b-col md="8" class="mt-2">
+                      <p>{{ getUserById(answer.user).name }}</p>
+                      <p>Lvl - {{ getLevelById(getUserById(answer.user).gameElements.level).level }}</p>
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </b-col>
           </b-row>
         </b-col>
-
-        <!-- ANSWER CONTENT -->
-        <b-col md="8" id="answerContent" class="red">
-          <p>{{ answer.answer }}</p>
-        </b-col>
-
-        <!-- ANSWER USER DATA -->
-        <!--<b-col v-id="answer.userId == answerUsers.id" class="answerUserData">
-          <b-row id="questionUserTime">
-            <b-col md="12">
-              <p>XXXX horas</p>
-            </b-col>
-          </b-row>
-          <b-row id="questionUserInfo">
-            <b-col md="3">
-              <img :src="answerUsers.profilePic" alt="pic.png">
-            </b-col>
-            <b-col md="9">
-              <p>{{answerUsers.fullName}}</p>
-              <p>level</p>
-            </b-col>
-          </b-row>
-        </b-col>-->
       </b-row>
 
-      <!-- NEW ANSWER -->
-      <b-row class="subrow questionInfo">
-        <h5>A tua resposta</h5>
-      </b-row>
+      <div v-if="question.locked == false">
+        <!-- NEW ANSWER -->
+        <b-row class="subrow rowsInfo">
+          <h5>A tua resposta</h5>
+        </b-row>
 
-      <!-- DIVISION BAR -->
-      <b-row id="divisionBarQuestion" class="questionInfo grey"></b-row>
+        <!-- DIVISION BAR -->
+        <b-row id="divisionBarQuestion" class="yellow"></b-row>
 
-      <!-- WRITE NEW ANSWER -->
-      <b-row id="newAnswer" class="subrow questionInfo">
-        <b-form id="frmAnswer">
-          <b-form-group>
-            <b-form-textarea
-              id="inputAnswer"
-              v-model="form.newAnswer"
-              :rows="3"
-              :max-rows="100"
-              required
-            ></b-form-textarea>
-          </b-form-group>
+        <!-- WRITE NEW ANSWER -->
+        <b-row id="newAnswer" class="subrow rowsInfo">
+          <b-col md="12">
+            <b-form id="frmAnswer">
+              <b-form-group>
+                <b-form-textarea
+                  id="inputAnswer"
+                  v-model="form.newAnswer"
+                  :rows="3"
+                  :max-rows="100"
+                  required
+                ></b-form-textarea>
+              </b-form-group>
 
-          <b-button @click="addAnswer()" class="btn" type="button">Publicar</b-button>
-        </b-form>
-      </b-row>
+              <b-button @click="addAnswer()" class="btn" type="button">Publicar</b-button>
+            </b-form>
+          </b-col>
+        </b-row>
+      </div>
     </div>
   </b-container>
 </template>
 
 
 <script>
+//'5cfa466e4e08b34490da46df'
+//tempLoggedId
+import { mapGetters, mapActions } from "vuex";
+import { mapState } from "vuex";
+
 export default {
   name: "question",
   data: function() {
     return {
       loggedUser: 0,
-      question: {},
+      question: null,
       questionUser: {},
       answers: [],
-      answerUsersId: [],
-      answerUsers: [],
       form: {
         newAnswer: ""
       },
+      tempQuestionId: 0,
 
       /********/
-      tempLoggedId: 0,
-      tempQuestionId: 0,
-      tempLevel: ""
+      tempLoggedId: 0
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    questions: function(newQuestion, oldQuestion) {
+      console.log("newQuestion");
+      console.log(newQuestion);
+      if (newQuestion.length > 0) {
+        this.answers = this.getAnswersByQuestionId(this.tempQuestionId);
+        this.question = this.getQuestionById(this.tempQuestionId);
+        this.questionUser = this.getUserById(this.question.user);
+      }
+    }
   },
   created() {
     this.loggedUser = this.$store.state.loggedUser;
     this.tempQuestionId = this.$route.params.id;
+    console.log(this.$route);
 
     /********/
     this.tempLoggedId = parseInt(
       JSON.parse(localStorage.getItem("loggedUser"))
     );
   },
+  mounted() {
+    this.$store.dispatch("loadUsers");
+    this.$store.dispatch("loadCourses");
+    this.$store.dispatch("loadQuestions");
+    this.$store.dispatch("loadUnits");
+    this.$store.dispatch("loadMedals");
+    this.$store.dispatch("loadLevels");
+    this.$store.dispatch("loadTags");
+  },
   methods: {
-    showQuestion() {
-      this.question = this.$store.getters.getQuestionById(this.tempQuestionId);
-    },
-
-    showQuestionUser() {
-      this.questionUser = this.$store.getters.getUserInfoById(
-        this.question.userId
-      );
-      this.tempLevel = this.$store.getters.getLevelById(this.questionUser.gameElements.level);
-    },
-
-    showAnswers() {
-      this.answers = this.$store.getters.getAnswersByQuestionId(
-        this.tempQuestionId
-      );
-    },
-
-    getAnswerUserId() {
-      for (let i = 0; i < this.answers.length; i++) {
-        this.answerUsersId.push(this.answers[i].userId);
+    ...mapActions(["edit_question_status"]),
+    upvote(question) {
+      let tempParams = {
+        question: question,
+        user: this.tempLoggedId
+      };
+      if (!this.checkVote(this.question.upvotes)) {
+        this.$store.dispatch("edit_question_upvote", tempParams);
       }
     },
-
-    showAnswerUser() {
-      for (let i = 0; i < this.answerUsersId.length; i++) {
-        this.answerUsers = this.$store.getters.getUserInfoById(
-          this.answerUsersId[i]
-        );
+    downvote(question) {
+      let tempParams = {
+        question: question,
+        user: this.tempLoggedId
+      };
+      if (!this.checkVote(this.question.downvotes)) {
+        this.$store.dispatch("edit_question_downvote", tempParams);
       }
-      console.log(this.answerUsers);
     },
-
+    checkVote(array) {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] == this.tempLoggedId) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
     checkAnswer(field) {
       let error = "";
-
       if (field) {
         error = "Os dados estão incompletos";
       }
       return error;
     },
-
     answerValidation() {
       let valid = false;
-
       if (!this.checkAnswer(this.form.newAnswer) == "") {
         valid = true;
       } else {
         valid = false;
       }
-
       return {
         valid: valid,
         msg: this.checkAnswer(this.form.newAnswer)
       };
     },
-
     addAnswer() {
       let newAnswer = {
-        id: this.$store.getters.getAnswerLastId(this.tempQuestionId),
-        userId: this.loggedUser,
+        id: this.getAnswerLastId(this.tempQuestionId),
+        user: this.loggedUser,
         date: this.$store.getters.getTodaysDate,
-        answer: this.form.newAnswer,
-        upvote: 0,
-        downvote: 0
+        description: this.form.newAnswer,
+        upvotes: [],
+        downvotes: []
       };
-
       let tempParams = {
         newAnswer: newAnswer,
         questionId: this.tempQuestionId
@@ -240,60 +296,45 @@ export default {
       if (this.answerValidation().valid) {
         this.$store.dispatch("set_answer", tempParams);
         alert("Registo efetuado com sucesso");
-        console.log(this.answers);
       } else {
         alert(this.answerValidation().msg);
       }
-    },
-
-    addUpvote() {
-      let upvote = {
-        amount: 1,
-        question: this.tempQuestionId
-      };
-      this.$store.dispatch("edit_question_upvote", upvote);
-    },
-
-    addDownvote() {
-      let downvote = {
-        amount: 1,
-        question: this.tempQuestionId
-      };
-      this.$store.dispatch("edit_question_downvote", downvote);
     }
   },
   computed: {
-    users() {
-      return this.$store.getters.users;
-    },
-    questions() {
-      return this.$store.getters.questions;
-    },
-    courses() {
-      return this.$store.getters.courses;
-    }
-  },
-  mounted() {
-    this.showQuestion();
-    this.showQuestionUser();
-    this.showAnswers();
+    ...mapGetters([
+      "getQuestions",
+      "getUsers",
+      "getCourses",
+      "getQuestionById",
+      "getUserById",
+      "getAnswersByQuestionId",
+      "getLevelById"
+    ]),
+    ...mapState([
+      "users",
+      "courses",
+      "questions",
+      "courseUnits",
+      "medals",
+      "levels",
+      "tags"
+    ])
   }
 };
 </script>
 
 
 <style>
-.questionPage {
-  background-color: rgb(255, 255, 255);
+.questionPage h2,
+.questionPage h5,
+.questionPage p,
+.questionPage .fa {
+  color: black;
 }
 
-#divisionBarQuestion {
-  margin: 20px 50px 0px 50px;
-}
-
-#votesInfo {
-  padding: 15px 0px 0px 20px !important;
-  margin: 0px;
+.rowsInfo {
+  padding: 20px !important;
 }
 
 .upBtn,
@@ -326,47 +367,40 @@ export default {
   margin: 2px 0px;
   text-align: center;
   display: inline-block;
+}
+
+.votes {
+  padding: 5px 15px;
+}
+
+.content {
+  text-align: left !important;
+  padding: 15px;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.content p {
   color: black;
 }
 
-.questionInfo {
-  margin: 50px 50px 0px 50px;
-}
-
-#questionContent,
-#answerContent {
-  margin: 0px 15px 0px 0px;
-  padding: 10px;
-  background-color: rgb(192, 192, 192);
-  font-size: 15px;
-}
-
-.questionUserData {
-  margin-right: 0px;
-}
-
-#questionUserTime,
-#questionUserInfo {
-  font-size: 13px;
-  background-color: rgb(192, 192, 192);
-}
-
-#questionUserTime p {
-  float: right;
-  margin-top: 10px;
-}
-
-#questionUserInfo {
+.userData {
+  background-color: #ffd150;
+  margin: 15px 0px 0px 0px;
   padding-bottom: 15px;
+  font-size: 13px;
+  border-radius: 5px;
 }
 
-#questionUserInfo p {
-  margin: 0px 0px 0px 10px;
+.userData p {
+  float: right;
+  margin: 10px 0px 0px 0px;
+  color: black;
 }
 
-#questionUserInfo img {
-  width: 40px;
-  height: 40px;
+.userData img {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   padding: 0px;
   margin: 0px;
@@ -374,9 +408,28 @@ export default {
 
 #answersTab h5 {
   margin-bottom: 0px;
+  color: black;
 }
 
 #newAnswer .form-control {
   border: 1px solid grey !important;
+}
+
+#newAnswer .btn {
+  float: right;
+}
+
+#newAnswer .text {
+  color: black;
+}
+
+#lock {
+  margin: 35px 0px 0px 15px;
+}
+
+#lock .btn {
+  margin: 0px;
+  padding: 0px;
+  background-color: transparent;
 }
 </style>

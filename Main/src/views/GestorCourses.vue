@@ -7,8 +7,8 @@
         <b-col sm="2">
           <Leftbar/>
         </b-col>
-        <b-col sm="7" class="container-border">
-          <Question/>
+        <b-col sm="8">
+          <GestorCourses/>
         </b-col>
         <b-col sm="3">
           <Rightbar/>
@@ -24,17 +24,14 @@
 import Navbar from "@/components/Navbar.vue";
 import Leftbar from "@/components/Leftbar.vue";
 import Rightbar from "@/components/Rightbar.vue";
-import Question from "@/components/Question.vue";
+import GestorCourses from "@/components/GestorCourses.vue";
 
 export default {
   components: {
     Navbar,
     Leftbar,
     Rightbar,
-    Question
+    GestorCourses
   }
 };
 </script>
-
-<style>
-</style>

@@ -7,8 +7,12 @@
         <b-col sm="2">
           <Leftbar/>
         </b-col>
-        <b-col sm="7" class="container-border">
-          <Question/>
+        <b-col sm="8" v-for="course in getCourses" :key="course.id">
+          <CourseUnits
+            v-for="unit in getUnitsByCourseId(course.id)"
+            :key="unit.id"
+            :unit="unit"
+            class="col-md-4 col-sm-6 col-12 mt-4"/>
         </b-col>
         <b-col sm="3">
           <Rightbar/>
@@ -24,17 +28,24 @@
 import Navbar from "@/components/Navbar.vue";
 import Leftbar from "@/components/Leftbar.vue";
 import Rightbar from "@/components/Rightbar.vue";
-import Question from "@/components/Question.vue";
+import CourseUnits from "@/components/CourseUnit.vue";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
     Navbar,
     Leftbar,
     Rightbar,
-    Question
+    CourseUnits
+  },
+  computed: {
+    ...mapGetters([
+      "getUsers",
+      "getCourses",
+      "checkUserUnitsById",
+      "checkCourseLabel",
+      "getUnitsByCourseId"
+    ])
   }
 };
 </script>
-
-<style>
-</style>
